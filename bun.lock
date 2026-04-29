@@ -5,7 +5,7 @@
       "name": "cloud-template",
       "dependencies": {
         "@hono/standard-validator": "^0.2.0",
-        "@valentinkolb/cloud": "^0.2.0",
+        "@valentinkolb/cloud": "^0.3.1",
         "@valentinkolb/stdlib": "0.3.0",
         "hono": "^4.11.1",
         "hono-openapi": "^1.1.2",
@@ -307,7 +307,7 @@
 
     "@upsetjs/venn.js": ["@upsetjs/venn.js@2.0.0", "", { "optionalDependencies": { "d3-selection": "^3.0.0", "d3-transition": "^3.0.1" } }, "sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw=="],
 
-    "@valentinkolb/cloud": ["@valentinkolb/cloud@0.2.1", "", { "dependencies": { "@fontsource-variable/jetbrains-mono": "^5.2.8", "@scalar/hono-api-reference": "^0.10.9", "@scalar/openapi-to-markdown": "^0.5.6", "@tabler/icons-webfont": "^3.36.1", "@tailwindcss/typography": "^0.5.19", "@valentinkolb/ssr": "0.9.0", "@valentinkolb/stdlib": "0.3.0", "@valentinkolb/sync": "^5.0.0", "bun-plugin-tailwind": "^0.1.2", "hono": "^4.11.1", "hono-openapi": "^1.1.2", "katex": "^0.16.28", "marked": "^17.0.1", "mermaid": "^11.12.2", "mustache": "^4.2.0", "nodemailer": "^7.0.12", "sanitize-html": "^2.17.0", "solid-js": "^1.9.10", "tailwindcss": "^4.1.18", "zod": "^4.3.4" } }, "sha512-P8XRkzXQrpNxs2ov1GHtb7JMVi6VVElpcK1QEF1x1Jg048hIQonOIWV92w2GxX/yyCP5zaDU2XEeJgRJHfkNAA=="],
+    "@valentinkolb/cloud": ["@valentinkolb/cloud@0.3.1", "", { "dependencies": { "@fontsource-variable/jetbrains-mono": "^5.2.8", "@scalar/hono-api-reference": "^0.10.9", "@scalar/openapi-to-markdown": "^0.5.6", "@tabler/icons-webfont": "^3.36.1", "@tailwindcss/typography": "^0.5.19", "@valentinkolb/ssr": "0.9.0", "@valentinkolb/stdlib": "0.3.0", "@valentinkolb/sync": "^5.0.0", "bun-plugin-tailwind": "^0.1.2", "hono": "^4.11.1", "hono-openapi": "^1.1.2", "katex": "^0.16.28", "marked": "^17.0.1", "mermaid": "^11.12.2", "mustache": "^4.2.0", "nodemailer": "^7.0.12", "sanitize-html": "^2.17.0", "solid-js": "^1.9.10", "tailwindcss": "^4.1.18", "zod": "^4.3.4" } }, "sha512-AE+XK0uONlpdtiEJhVwEFLy2eUi3nisOKJFGc8P2kbQC5wuAe6YGiUsIDuhuQngWk3wfhkXjKuT8k1V0MmKhFg=="],
 
     "@valentinkolb/ssr": ["@valentinkolb/ssr@0.9.0", "", { "dependencies": { "@babel/core": "^7.24.0", "@babel/preset-typescript": "^7.24.0", "babel-preset-solid": "^1.8.0", "seroval": "^1.0.0" }, "peerDependencies": { "@elysiajs/static": "^1.0.0", "elysia": "^1.0.0", "hono": "^4.0.0", "solid-js": "^1.9.0" }, "optionalPeers": ["@elysiajs/static", "elysia", "hono"] }, "sha512-r6J+T1caaw+gm67Bv2ey9ezm3X2a53bZ/ywZSaa+OnYDNvIG3OIX6tooC3GxWpyD5SsZoj/fi0ulKDxfFS9g9g=="],
 

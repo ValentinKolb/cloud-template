@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { middleware, type AuthContext } from "@valentinkolb/cloud/server";
 import { app } from "./config";
 import apiRoutes from "./api";
 import pageRoutes from "./frontend";
@@ -9,22 +10,31 @@ import { expeditionsService } from "./service";
 /**
  * Container entrypoint for the expeditions app.
  *
- * `app.start()` spins up Hono, registers the platform middleware (auth
- * session loading, request logging, rate limiting, settings snapshot),
- * wires our route bundles into the global paths the gateway expects, runs
- * `lifecycle.setup` once on boot, and heartbeats into the Redis registry.
+ * Compose your own router with whatever middleware you need:
+ *   - middleware.runtime()   c.get("runtime"), required by Layout/Sidebar
+ *   - middleware.settings()  c.get("settings"), required for typed settings
+ *   - middleware.logger()    HTTP request logger
+ *   - middleware.ratelimit() sliding-window rate limit
+ *
+ * Then pass `router.fetch` to `app.start({ fetch })`. The framework owns
+ * `/_ssr/*`, `/public/*`, and (when capabilities.search is set)
+ * `/api/_internal/search` — these mount before your router.
  *
  * Standard four-prefix mount:
- *   /api/expeditions/*    — widget + CRUD endpoints (api/index.ts handles split)
+ *   /api/expeditions/*    — widget + CRUD endpoints
  *   /app/expeditions/*    — SSR pages
  *   /admin/expeditions/*  — admin SSR pages (admin-gated)
  *   /public/expeditions/* — built CSS, served automatically by the framework
  */
+const router = new Hono<AuthContext>()
+  .use("*", middleware.runtime())
+  .use("*", middleware.settings())
+  .route("/api/expeditions", apiRoutes)
+  .route("/app/expeditions", pageRoutes)
+  .route("/admin/expeditions", adminPageRoutes);
+
 export default await app.start({
-  router: new Hono()
-    .route("/api/expeditions", apiRoutes)
-    .route("/app/expeditions", pageRoutes)
-    .route("/admin/expeditions", adminPageRoutes),
+  fetch: router.fetch,
   lifecycle: {
     // Runs once per container boot. Idempotent — safe to re-run on every
     // restart. Never destructive.
