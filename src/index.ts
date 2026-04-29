@@ -35,6 +35,13 @@ const router = new Hono<AuthContext>()
 
 export default await app.start({
   fetch: router.fetch,
+  // Pair with defineApp's `openapi: "/api/expeditions/openapi.json"`.
+  // The framework generates the spec from this router at boot and serves
+  // it at the configured URL (public, before any auth middleware). The
+  // platform's api-docs app at /app/api-docs aggregates every advertised
+  // spec into one Scalar UI. Drop both `openapi` fields if your app has
+  // no API surface (pages-only).
+  openapi: apiRoutes,
   lifecycle: {
     // Runs once per container boot. Idempotent — safe to re-run on every
     // restart. Never destructive.

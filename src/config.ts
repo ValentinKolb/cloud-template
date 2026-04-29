@@ -36,6 +36,12 @@ export const app = defineApp({
   // `path` is relative to this app's HTTP service (the gateway prefixes it
   // automatically when forwarding the request).
   widgets: [{ id: "active", path: "/api/expeditions/widget/active" }],
+  // Opt in to the platform-wide API docs aggregator at /app/api-docs.
+  // Pair with `app.start({ openapi: apiRoutes })` in index.ts —
+  // defineApp generates the spec from the api router at boot, mounts it
+  // here (public, before any auth middleware), and advertises the URL
+  // via the registry. Drop both fields if your app has no API surface.
+  openapi: "/api/expeditions/openapi.json",
   // Top-level URL prefixes the gateway routes to this container. Standard
   // four-prefix scheme: api covers widget + CRUD, app + admin host the SSR
   // pages, public serves the per-app CSS bundle.
