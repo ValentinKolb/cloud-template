@@ -40,11 +40,11 @@ docker compose up -d --build app-expeditions   # with the platform stack
 ├── package.json            # name + deps
 ├── tsconfig.json           # @/* path alias for src/, jsx: solid-js
 ├── Dockerfile              # 3-stage build: deps → build → alpine runtime
-├── compose.yml             # 8 services + postgres + valkey
+├── compose.yml             # platform stack + your app
 ├── .env.example            # cloud-template namespaced credentials
 └── src/
     ├── config.ts           # defineApp({ id, routes, nav, widgets, settings })
-    ├── index.ts            # app.start({ router, lifecycle, capabilities })
+    ├── index.ts            # app.start({ fetch, openapi, lifecycle, capabilities })
     ├── migrate.ts          # CREATE … IF NOT EXISTS
     ├── contracts.ts        # Zod schemas → inferred TS types
     ├── styles/app.css      # @import "tailwindcss";
@@ -125,16 +125,26 @@ Apps with non-standard URLs (OAuth, legal pages) just list whatever top-level pr
 
 ```ts
 import { Hono } from "hono";
+import { middleware, type AuthContext } from "@valentinkolb/cloud/server";
 import { app } from "./config";
 import apiRoutes from "./api";
 import pageRoutes, { adminPages } from "./frontend";
 import { migrate } from "./migrate";
 
+const router = new Hono<AuthContext>()
+  .use("*", middleware.runtime())   // c.get("runtime"), required by Layout/Sidebar
+  .use("*", middleware.settings())  // c.get("settings"), required for typed settings
+  .route("/api/expeditions",   apiRoutes)
+  .route("/app/expeditions",   pageRoutes)
+  .route("/admin/expeditions", adminPages);
+
 export default await app.start({
-  router: new Hono()
-    .route("/api/expeditions",   apiRoutes)
-    .route("/app/expeditions",   pageRoutes)
-    .route("/admin/expeditions", adminPages),
+  fetch: router.fetch,
+  // Pair with defineApp's `openapi: "/api/expeditions/openapi.json"`. The
+  // framework generates the spec from this router and serves it publicly;
+  // the platform's api-docs app aggregates every advertised spec into one
+  // Scalar UI. Drop both fields if your app has no API surface.
+  openapi: apiRoutes,
   lifecycle: {
     setup: async () => { await migrate(); },  // runs once per container boot, idempotent
   },
@@ -314,7 +324,7 @@ defineApp({
 })
 ```
 
-In handlers: `c.get("settings")["expeditions.notify_on_completion"]` (sync, frozen, type-checked). Outside handlers: `getSync<T>(key)` from `@valentinkolb/cloud/services`.
+In handlers: `c.get("settings")["expeditions.notify_on_completion"]` (sync, frozen, type-checked — populated by `middleware.settings()`). Outside handlers: `await settings.get<T>(key)` from `@valentinkolb/cloud/services` (async, hits the cache).
 
 Registered settings appear in `/admin/settings`.
 
@@ -342,7 +352,7 @@ Block kinds: `stat`, `list`, `status`, `pills`, `hero`.
 
 ```ts
 app.start({
-  router,
+  fetch: router.fetch,
   capabilities: {
     search: {
       tags: ["expeditions"],
@@ -366,9 +376,12 @@ Results appear under `Cmd+K`.
 
 ```ts
 import { websocket } from "hono/bun";
-const result = await app.start({ router, lifecycle });
+const result = await app.start({ fetch: router.fetch, lifecycle });
 export default { ...result, websocket };
 ```
+
+`upgradeWebSocket` from `hono/bun` works inside your router because the
+framework threads Bun's server context (`c.env`) through to the user fetch.
 
 ---
 
@@ -434,7 +447,7 @@ The template ships as `expeditions`. To make it yours:
 3. Rename the Postgres schema in `src/migrate.ts`.
 4. Update the service name + `APP_ID` env in `compose.yml` and `Dockerfile`.
 
-Or start fresh: keep `defineApp(…) + app.start({ router })`, delete the rest.
+Or start fresh: keep `defineApp(…) + app.start({ fetch: router.fetch })`, delete the rest.
 
 ---
 
